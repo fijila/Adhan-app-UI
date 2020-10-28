@@ -73,10 +73,7 @@ function Timesetting() {
 	const showModal = () => {
 		setShow(true);
 	};
-	const handleOk = (e) => {
-		console.log(e);
-		setShow(false);
-	};
+
 
 	const handleCancel = (e) => {
 		console.log(e);
@@ -85,12 +82,20 @@ function Timesetting() {
 	const onDateChange = (date, dateString) => {
 		// console.log("date is", dateString);
 		userInput["date"] = dateString;
+		editObj.date = moment(dateString);
+		
 
 		console.log("date is", userInput);
 	};
 
 	const handleTimePickerChange = (time, timeString, namaz) => {
+		if (timeString == null || timeString == "") {
+			alert("invalid time");
+			return;
+		}
 		userInput[namaz] = timeString;
+		editObj[namaz] = moment(timeString, "HH:mm:ss");
+		setUserInput(userInput);
 		console.log("time is", userInput);
 	};
     
@@ -101,43 +106,29 @@ function Timesetting() {
 
 
 	const handleSubmit = () => {
-		setShow(false);
+		if (
+			!(validateUserField(userInput["date"]) &&
+			validateUserField(userInput["Fajr"]) &&
+			validateUserField(userInput["Dhuhar"]) &&
+			validateUserField(userInput["Asar"]) &&
+			validateUserField(userInput["Magrib"]) &&
+			validateUserField(userInput["Ishaa"]))
+		) {
+			alert("Validation Failure");
+			return;
+		}
 		userDataArr.date = userInput.date;
 		var adhanJson = {};
 		adhanJson.adhanDate = userDataArr.date;
 		var prayerArr = [];
-		var adhanFajr = {};
-		var adhanDhuhar = {};
-		var adhanAsar = {};
-		var adhanMagrib = {};
-		var adhanIshaa = {};
-		adhanFajr.prayerName = "Fajr";
-		adhanFajr.adhanTime = userInput.Fajr;
-		prayerArr.push(adhanFajr);
-		adhanJson.adhanTimes = prayerArr;
-		JSON.stringify(adhanJson);
-		adhanDhuhar.prayerName = "Dhuhar";
-		adhanDhuhar.adhanTime = userInput.Dhuhar;
-		prayerArr.push(adhanDhuhar);
-		adhanJson.adhanTimes = prayerArr;
-		JSON.stringify(adhanJson);
-		adhanAsar.prayerName = "Asar";
-		adhanAsar.adhanTime = userInput.Asar;
-		prayerArr.push(adhanAsar);
-		adhanJson.adhanTimes = prayerArr;
-		JSON.stringify(adhanJson);
-		adhanMagrib.prayerName = "Magrib";
-		adhanMagrib.adhanTime = userInput.Magrib;
-		prayerArr.push(adhanMagrib);
-		adhanJson.adhanTimes = prayerArr;
-		JSON.stringify(adhanJson);
-		adhanIshaa.prayerName = "Ishaa";
-		adhanIshaa.adhanTime = userInput.Ishaa;
-		prayerArr.push(adhanIshaa);
-
+		prayerArr.push(generateAdhanInputObject(userInput, "Fajr"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Dhuhar"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Asar"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Magrib"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Ishaa"));
 		adhanJson.adhanTimes = prayerArr;
 		console.log("result is", JSON.stringify(adhanJson));
-
+		setShow(false);
 		axios.post("http://localhost:8080/adhan", adhanJson)
 		.then((response) => console.log("response is", response.data));
 
@@ -146,6 +137,21 @@ function Timesetting() {
 
 		setCount(userDataArr.length);
 	};
+
+	
+	function validateUserField(val){
+		if (val == null || val == "") {
+			return false;
+		}
+		return true;
+
+	}
+	function generateAdhanInputObject(userInput,adhanName) {
+		var adhanObj = {};
+		adhanObj.prayerName = adhanName;
+		adhanObj.adhanTime = userInput[adhanName];
+		return adhanObj;
+	}
 	async function fetchData() {
 		const response = await axios(`http://localhost:8080/adhan`);
 		const datas = await response.data;
@@ -167,7 +173,9 @@ function Timesetting() {
 		adhanObj.Ishaa = getPrayerTimeByPrayer(value.adhanTimes, "Ishaa");
 		return adhanObj;
 	}
-
+	function addPrayer(){
+		showModal();
+	}
 	const handleEdit = (key) => {
 		console.log(key);
 		
@@ -181,6 +189,13 @@ function Timesetting() {
 			editObj.Magrib = moment(adhanObj.Magrib, "HH:mm:ss");
 			editObj.Ishaa = moment(adhanObj.Ishaa, "HH:mm:ss");
 
+			userInput.date = adhanObj.adhanDate;
+			userInput.Fajr = adhanObj.Fajr;
+			userInput.Dhuhar = adhanObj.Dhuhar;
+			userInput.Asar = adhanObj.Asar;
+			userInput.Magrib = adhanObj.Magrib;
+			userInput.Ishaa = adhanObj.Ishaa;
+
 			showModal();
 		});
 	};
@@ -190,24 +205,26 @@ function Timesetting() {
 		var returnObj = valArray.filter((obj) => {
 			return obj.prayerName === prayerName;
 		});
-
 		return returnObj[0].adhanTime;
 	}
 	useEffect(() => {
-		console.log("dgsgdhsghsgd");
+		console.log("userInput Updated");
+	},[userInput]);
+	useEffect(() => {
+		console.log("User Data Array updated");
 		fetchData();
 	}, [userDataArr]);
 	useEffect(() => {
-		console.log("dgsgdhsghsgd");
+		console.log("Initial Load");
 		fetchData();
 	}, []);
 
 	return (
 		<div>
-			<Button type="primary" onClick={showModal}>
+			<Button type="primary" onClick={addPrayer}>
 				Add Prayer
 			</Button>
-			<Modal title="Basic Modal" visible={show} onOk={handleSubmit} onCancel={handleCancel}>
+			<Modal title="Basic Modal" visible={show} onOk={handleSubmit} onCancel={handleCancel} style={{ width: "800px" }}>
 				<div>
 					<Form>
 						<Space direction="vertical">
@@ -216,42 +233,46 @@ function Timesetting() {
 							</Form.Item>
 						</Space>
 						<Mode>
-							<Space direction="vertical">
-								Fajr
-								<Form.Item rules={[{ required: true, message: "Please input your username!" }]}>
-									<TimePicker
-										value={editObj.Fajr}
-										onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Fajr")}
-									/>
-								</Form.Item>
-								Dhuhar
-								<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
-									<TimePicker
-										value={editObj.Dhuhar}
-										onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Dhuhar")}
-									/>
-								</Form.Item>
-								Asar
-								<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
-									<TimePicker
-										value={editObj.Asar}
-										onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Asar")}
-									/>
-								</Form.Item>
-								Magrib
-								<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
-									<TimePicker
-										value={editObj.Magrib}
-										onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Magrib")}
-									/>
-								</Form.Item>
-								Ishaa
-								<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
-									<TimePicker
-										value={editObj.Ishaa}
-										onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Ishaa")}
-									/>
-								</Form.Item>
+							<Space>
+								<div style={{ width: "200px", padding: "20px" }}>
+									Fajr
+									<Form.Item>
+										<TimePicker
+											value={editObj.Fajr}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Fajr")}
+										/>
+									</Form.Item>
+									Dhuhar
+									<Form.Item rules={[{ type: "object", required: true, message: "Please input Time!" }]}>
+										<TimePicker
+											value={editObj.Dhuhar}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Dhuhar")}
+										/>
+									</Form.Item>
+									Asar
+									<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
+										<TimePicker
+											value={editObj.Asar}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Asar")}
+										/>
+									</Form.Item>
+								</div>
+								<div style={{ width: "200px", padding: "10px" }}>
+									Magrib
+									<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
+										<TimePicker
+											value={editObj.Magrib}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Magrib")}
+										/>
+									</Form.Item>
+									Ishaa
+									<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
+										<TimePicker
+											value={editObj.Ishaa}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Ishaa")}
+										/>
+									</Form.Item>
+								</div>
 							</Space>
 						</Mode>
 					</Form>

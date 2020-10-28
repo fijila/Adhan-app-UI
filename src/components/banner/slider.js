@@ -31,7 +31,9 @@ function Slider() {
 			<PrayerTimeDiv>
 				<NextPrayerDiv>
 					<TimeHeader>Next prayer</TimeHeader>
-					<PrayerName> Dhuhr</PrayerName>
+					<PrayerName> 
+						
+						Dhuhr</PrayerName>
 					<PrayerTime>1.25</PrayerTime>
 				</NextPrayerDiv>
 				<CurrentTimeDiv>

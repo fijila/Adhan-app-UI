@@ -1,16 +1,15 @@
 import React from 'react';
-import Home from './pages/Home';
 import './App.css';
-import Timesetting from "./pages/Admin";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AppRoutes } from "./utils/Route.js";
+
 
 
 function App() {
   return (
-    <div className="App">
-      {/* <Home/> */}
-      <Timesetting/>
-
-    </div>
+		<Router>
+			<AppRoutes />
+		</Router>
   );
 }
 

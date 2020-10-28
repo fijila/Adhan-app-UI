@@ -2,23 +2,21 @@
 import React from "react";
 
 import {
-	HashRouter as Router,
 	Route,
 	Switch,
-	// browserHistory
 } from "react-router-dom";
-import contact from "../pages/contact/contact";
+import Timesetting from "../pages/Admin";
+import Home from "../pages/Home";
+
+
 export const AppRoutes = () => {
 	return (
 		// <Router history={createHashHistory()}>
-		<Router>
 			<Switch>
-				<Route exact path="/Home" component={home} />
-				
-				{/* <Route component={MessageContainer} /> */}
-				<Route exact path="/" component={home} />
+				<Route exact path="/" component={Home} />
+
+				<Route exact path="/admin" component={Timesetting} />
 			</Switch>
-		</Router>
 		// </HashRouter>
 	);
 };
