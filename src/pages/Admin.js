@@ -8,6 +8,7 @@ import moment from "moment";
 
 function Timesetting() {
 	const [type, setType] = useState([]);
+	const baseUrl=''
 	const columns = [
 		{
 			title: "Date",
@@ -129,7 +130,7 @@ function Timesetting() {
 		adhanJson.adhanTimes = prayerArr;
 		console.log("result is", JSON.stringify(adhanJson));
 		setShow(false);
-		axios.post("http://localhost:8080/adhan", adhanJson)
+		axios.post(baseUrl+"/adhan", adhanJson)
 		.then((response) => console.log("response is", response.data));
 
 		console.log(JSON.stringify(userDataArr));
@@ -153,7 +154,7 @@ function Timesetting() {
 		return adhanObj;
 	}
 	async function fetchData() {
-		const response = await axios(`http://localhost:8080/adhan`);
+		const response = await axios(baseUrl+`/adhan`);
 		const datas = await response.data;
 		var outData = datas.adhanModels.map(iterateAdhan);
 		setType(outData);
@@ -178,8 +179,7 @@ function Timesetting() {
 	}
 	const handleEdit = (key) => {
 		console.log(key);
-		
-		axios.get("http://localhost:8080/findAdhanByDate?adhanDate="+key).then((response) => {
+		axios.get(baseUrl+"/findAdhanByDate?adhanDate="+key).then((response) => {
 			console.log("response is", response.data)
 			let adhanObj=convertresponseToAdhanObject(response.data);
 			editObj.date = moment(adhanObj.adhanDate);

@@ -22,13 +22,15 @@ export const PrayerTimeDiv = styled.div`
 	background-color: #ff5733;
 	flex-direction: row;
 `;
+
 export const CurrentTimeDiv = styled.div`
-			padding: 5px;
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-			text-align: center;
-		`;
+	padding: 5px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	text-align: center;
+	margin: auto;
+`;
 export const NextPrayerDiv = styled.div`
 	padding: 5px;
 	display: flex;
@@ -36,16 +38,68 @@ export const NextPrayerDiv = styled.div`
 `;
 export const TimeHeader = styled.h1`
 	font-size: 5vw;
+	justify-content: center;
+	text-align: center;
 `;
 export const PrayerName = styled.h5`
-			font-size: 3vw;
-			color: #fff;
-		`;
+	font-size: 5vw;
+	justify-content: center;
+	text-align: center;
+
+	color: #fff;
+`;
 export const PrayerTime = styled.h3`
-    font-size: 5vw;
-    color:#fff;
+	font-size: 8vw;
+	color: #fff;
+	justify-content: center;
+	text-align: center;
 `;
 export const CurrentTimeHeader = styled.h5`
-			font-size: 2vw;
-			color:yellow;
-		`;
+	font-size: 2vw;
+	color: yellow;
+	justify-content: center;
+	text-align: center;
+`;
+export const MessageDiv = styled.div`
+	display: flex;
+	padding: 5px;
+	font-size: 2vw;
+	font-weight: 700;
+	text-color: red;
+	overflow-x: scroll;
+	white-space: nowrap; // text will move in single line
+
+	p {
+		-moz-animation: marquee 20s linear infinite;
+		-webkit-animation: marquee 20s linear infinite;
+		animation: marquee 20s linear infinite;
+	}
+	@-moz-keyframes marquee {
+		0% {
+			transform: translateX(10%);
+		}
+		100% {
+			transform: translateX(-100%);
+		}
+	}
+	@-webkit-keyframes marquee {
+		0% {
+			transform: translateX(100%);
+		}
+		100% {
+			transform: translateX(-100%);
+		}
+	}
+	@keyframes marquee {
+		0% {
+			-moz-transform: translateX(100%);
+			-webkit-transform: translateX(100%);
+			transform: translateX(100%);
+		}
+		100% {
+			-moz-transform: translateX(-100%);
+			-webkit-transform: translateX(-100%);
+			transform: translateX(-100%);
+		}
+	}
+`;
