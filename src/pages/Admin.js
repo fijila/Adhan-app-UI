@@ -1,14 +1,17 @@
 import React, { useState, useReducer, useEffect } from "react";
 import { DatePicker, Space, TimePicker, Modal, Button, Form, Table, Popconfirm } from "antd";
 import "antd/dist/antd.css";
-import { Mode } from "./Admin.styled";
+import { Mode, ButtonDiv, FileButtonDiv, MainDiv } from "./Admin.styled";
 import axios from "axios";
 import moment from "moment";
-
+import ImageUpload from "../components/ImageUpload/imageupload";
+import Message from "../components/Message/message";
+import {baseUrl as baseUrl} from "../constants/constants";
+import FileUpload  from "../components/fileupload/fileUpload"
 
 function Timesetting() {
 	const [type, setType] = useState([]);
-	const baseUrl=''
+
 	const columns = [
 		{
 			title: "Date",
@@ -23,19 +26,19 @@ function Timesetting() {
 			key: "Fajr",
 		},
 		{
-			title: "Dhuhar",
-			dataIndex: "Dhuhar",
-			key: "Dhuhar",
+			title: "Dhuhr",
+			dataIndex: "Dhuhr",
+			key: "Dhuhr",
 		},
 		{
-			title: "Asar",
-			dataIndex: "Asar",
-			key: "Asar",
+			title: "Asr",
+			dataIndex: "Asr",
+			key: "Asr",
 		},
 		{
-			title: "Magrib",
-			dataIndex: "Magrib",
-			key: "Magrib",
+			title: "Maghrib",
+			dataIndex: "Maghrib",
+			key: "Maghrib",
 		},
 		{
 			title: "Ishaa",
@@ -59,9 +62,7 @@ function Timesetting() {
 		date: "",
 	});
 
-	const [editObj, setEditObj] = useReducer((state, newState) => ({ ...state, ...newState }), {
-		
-	});
+	const [editObj, setEditObj] = useReducer((state, newState) => ({ ...state, ...newState }), {});
 	// const [userInput,setUserInput] = useState([]);
 
 	const [userDataArr, setUserDataArr] = useReducer((state, newState) => ({ ...state, ...newState }), {
@@ -75,7 +76,6 @@ function Timesetting() {
 		setShow(true);
 	};
 
-
 	const handleCancel = (e) => {
 		console.log(e);
 		setShow(false);
@@ -84,7 +84,6 @@ function Timesetting() {
 		// console.log("date is", dateString);
 		userInput["date"] = dateString;
 		editObj.date = moment(dateString);
-		
 
 		console.log("date is", userInput);
 	};
@@ -99,21 +98,17 @@ function Timesetting() {
 		setUserInput(userInput);
 		console.log("time is", userInput);
 	};
-    
-
-	
-
-		
-
 
 	const handleSubmit = () => {
 		if (
-			!(validateUserField(userInput["date"]) &&
-			validateUserField(userInput["Fajr"]) &&
-			validateUserField(userInput["Dhuhar"]) &&
-			validateUserField(userInput["Asar"]) &&
-			validateUserField(userInput["Magrib"]) &&
-			validateUserField(userInput["Ishaa"]))
+			!(
+				validateUserField(userInput["date"]) &&
+				validateUserField(userInput["Fajr"]) &&
+				validateUserField(userInput["Dhuhr"]) &&
+				validateUserField(userInput["Asr"]) &&
+				validateUserField(userInput["Maghrib"]) &&
+				validateUserField(userInput["Ishaa"])
+			)
 		) {
 			alert("Validation Failure");
 			return;
@@ -123,15 +118,14 @@ function Timesetting() {
 		adhanJson.adhanDate = userDataArr.date;
 		var prayerArr = [];
 		prayerArr.push(generateAdhanInputObject(userInput, "Fajr"));
-		prayerArr.push(generateAdhanInputObject(userInput, "Dhuhar"));
-		prayerArr.push(generateAdhanInputObject(userInput, "Asar"));
-		prayerArr.push(generateAdhanInputObject(userInput, "Magrib"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Dhuhr"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Asr"));
+		prayerArr.push(generateAdhanInputObject(userInput, "Maghrib"));
 		prayerArr.push(generateAdhanInputObject(userInput, "Ishaa"));
 		adhanJson.adhanTimes = prayerArr;
 		console.log("result is", JSON.stringify(adhanJson));
 		setShow(false);
-		axios.post(baseUrl+"/adhan", adhanJson)
-		.then((response) => console.log("response is", response.data));
+		axios.post(baseUrl + "/adhan", adhanJson).then((response) => console.log("response is", response.data));
 
 		console.log(JSON.stringify(userDataArr));
 		setUserDataArr(userDataArr);
@@ -139,22 +133,20 @@ function Timesetting() {
 		setCount(userDataArr.length);
 	};
 
-	
-	function validateUserField(val){
+	function validateUserField(val) {
 		if (val == null || val == "") {
 			return false;
 		}
 		return true;
-
 	}
-	function generateAdhanInputObject(userInput,adhanName) {
+	function generateAdhanInputObject(userInput, adhanName) {
 		var adhanObj = {};
 		adhanObj.prayerName = adhanName;
 		adhanObj.adhanTime = userInput[adhanName];
 		return adhanObj;
 	}
 	async function fetchData() {
-		const response = await axios(baseUrl+`/adhan`);
+		const response = await axios(baseUrl + `/adhan`);
 		const datas = await response.data;
 		var outData = datas.adhanModels.map(iterateAdhan);
 		setType(outData);
@@ -164,36 +156,37 @@ function Timesetting() {
 	function iterateAdhan(value, index, array) {
 		return convertresponseToAdhanObject(value);
 	}
-	function convertresponseToAdhanObject(value){
+	function convertresponseToAdhanObject(value) {
 		let adhanObj = {};
 		adhanObj.adhanDate = value.adhanDate;
 		adhanObj.Fajr = getPrayerTimeByPrayer(value.adhanTimes, "Fajr");
-		adhanObj.Dhuhar = getPrayerTimeByPrayer(value.adhanTimes, "Dhuhar");
-		adhanObj.Asar = getPrayerTimeByPrayer(value.adhanTimes, "Asar");
-		adhanObj.Magrib = getPrayerTimeByPrayer(value.adhanTimes, "Magrib");
+		adhanObj.Dhuhr = getPrayerTimeByPrayer(value.adhanTimes, "Dhuhr");
+		adhanObj.Asr = getPrayerTimeByPrayer(value.adhanTimes, "Asr");
+		adhanObj.Maghrib = getPrayerTimeByPrayer(value.adhanTimes, "Maghrib");
 		adhanObj.Ishaa = getPrayerTimeByPrayer(value.adhanTimes, "Ishaa");
 		return adhanObj;
 	}
-	function addPrayer(){
+	function addPrayer() {
 		showModal();
 	}
 	const handleEdit = (key) => {
 		console.log(key);
-		axios.get(baseUrl+"/findAdhanByDate?adhanDate="+key).then((response) => {
-			console.log("response is", response.data)
-			let adhanObj=convertresponseToAdhanObject(response.data);
+
+		axios.get(baseUrl + "/findAdhanByDate?adhanDate=" + key).then((response) => {
+			console.log("response is", response.data);
+			let adhanObj = convertresponseToAdhanObject(response.data);
 			editObj.date = moment(adhanObj.adhanDate);
 			editObj.Fajr = moment(adhanObj.Fajr, "HH:mm:ss");
-			editObj.Dhuhar = moment(adhanObj.Dhuhar, "HH:mm:ss");
-			editObj.Asar = moment(adhanObj.Asar, "HH:mm:ss");
-			editObj.Magrib = moment(adhanObj.Magrib, "HH:mm:ss");
+			editObj.Dhuhr = moment(adhanObj.Dhuhr, "HH:mm:ss");
+			editObj.Asr = moment(adhanObj.Asr, "HH:mm:ss");
+			editObj.Maghrib = moment(adhanObj.Maghrib, "HH:mm:ss");
 			editObj.Ishaa = moment(adhanObj.Ishaa, "HH:mm:ss");
 
 			userInput.date = adhanObj.adhanDate;
 			userInput.Fajr = adhanObj.Fajr;
-			userInput.Dhuhar = adhanObj.Dhuhar;
-			userInput.Asar = adhanObj.Asar;
-			userInput.Magrib = adhanObj.Magrib;
+			userInput.Dhuhr = adhanObj.Dhuhr;
+			userInput.Asr = adhanObj.Asr;
+			userInput.Maghrib = adhanObj.Maghrib;
 			userInput.Ishaa = adhanObj.Ishaa;
 
 			showModal();
@@ -209,7 +202,7 @@ function Timesetting() {
 	}
 	useEffect(() => {
 		console.log("userInput Updated");
-	},[userInput]);
+	}, [userInput]);
 	useEffect(() => {
 		console.log("User Data Array updated");
 		fetchData();
@@ -221,14 +214,23 @@ function Timesetting() {
 
 	return (
 		<div>
-			<Button type="primary" onClick={addPrayer}>
-				Add Prayer
-			</Button>
-			<Modal title="Basic Modal" visible={show} onOk={handleSubmit} onCancel={handleCancel} style={{ width: "800px" }}>
+			<MainDiv>
+				<ButtonDiv>
+					<Button type="primary" onClick={addPrayer} style={{ margin: "auto 5px" }}>
+						Add Prayer
+					</Button>
+					<ImageUpload />
+					<Message />
+				</ButtonDiv>
+				<FileButtonDiv>
+					<FileUpload />
+				</FileButtonDiv>
+			</MainDiv>
+			<Modal title="Add Prayer" visible={show} onOk={handleSubmit} onCancel={handleCancel} style={{ width: "800px" }}>
 				<div>
 					<Form>
 						<Space direction="vertical">
-							<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
+							<Form.Item rules={[{ required: true }]}>
 								<DatePicker value={editObj.date} onChange={onDateChange} />
 							</Form.Item>
 						</Space>
@@ -242,27 +244,27 @@ function Timesetting() {
 											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Fajr")}
 										/>
 									</Form.Item>
-									Dhuhar
+									Dhuhr
 									<Form.Item rules={[{ type: "object", required: true, message: "Please input Time!" }]}>
 										<TimePicker
-											value={editObj.Dhuhar}
-											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Dhuhar")}
+											value={editObj.Dhuhr}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Dhuhr")}
 										/>
 									</Form.Item>
-									Asar
+									Asr
 									<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
 										<TimePicker
-											value={editObj.Asar}
-											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Asar")}
+											value={editObj.Asr}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Asr")}
 										/>
 									</Form.Item>
 								</div>
 								<div style={{ width: "200px", padding: "10px" }}>
-									Magrib
+									Maghrib
 									<Form.Item rules={[{ type: "object", required: true, message: "Please input your username!" }]}>
 										<TimePicker
-											value={editObj.Magrib}
-											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Magrib")}
+											value={editObj.Maghrib}
+											onChange={(time, timeString) => handleTimePickerChange(time, timeString, "Maghrib")}
 										/>
 									</Form.Item>
 									Ishaa

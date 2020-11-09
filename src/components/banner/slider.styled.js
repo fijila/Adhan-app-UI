@@ -9,7 +9,6 @@ export const Sliderdiv = styled.div`
 	width: 65%;
 	object-fit: cover;
 	justify-content: center;
-	background-color: red;
 `;
 export const BannerImage = styled.img`
 	object-fit: cover;
@@ -61,12 +60,13 @@ export const CurrentTimeHeader = styled.h5`
 	text-align: center;
 `;
 export const MessageDiv = styled.div`
+margin:5px;
 	display: flex;
 	padding: 5px;
 	font-size: 2vw;
 	font-weight: 700;
 	text-color: red;
-	overflow-x: scroll;
+	overflow: scroll;
 	white-space: nowrap; // text will move in single line
 
 	p {
