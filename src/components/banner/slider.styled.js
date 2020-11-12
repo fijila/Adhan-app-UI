@@ -66,7 +66,7 @@ margin:5px;
 	font-size: 2vw;
 	font-weight: 700;
 	text-color: red;
-	overflow: scroll;
+	// overflow: scroll;
 	white-space: nowrap; // text will move in single line
 
 	p {
