@@ -78,7 +78,7 @@ function ImageUpload() {
 							</Form.Item>
 						</ImageLoadDiv>
 					</Form>
-					<span style={{color:"red"}}> *The image size should be 1200*700 and in jpg format*</span>
+					<span style={{color:"red"}}> *The image size should be 1200*600 and in jpg format*</span>
 				</Modal>
 			</>
 		</div>

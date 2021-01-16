@@ -6,6 +6,7 @@ import axios from "axios";
 import moment from "moment";
 import ImageUpload from "../components/ImageUpload/imageupload";
 import Message from "../components/Message/message";
+import MasjidName from "../components/masjidName/masjidName";
 import {baseUrl as baseUrl} from "../constants/constants";
 import FileUpload  from "../components/fileupload/fileUpload"
 
@@ -26,9 +27,19 @@ function Timesetting() {
 			key: "Fajr",
 		},
 		{
+			title: "FajrJamat",
+			dataIndex: "FajrJamat",
+			key: "FajrJamat",
+		},
+		{
 			title: "Dhuhr",
 			dataIndex: "Dhuhr",
 			key: "Dhuhr",
+		},
+		{
+			title: "DhuhrJamat",
+			dataIndex: "DhuhrJamat",
+			key: "DhuhrJamat",
 		},
 		{
 			title: "Asr",
@@ -36,9 +47,19 @@ function Timesetting() {
 			key: "Asr",
 		},
 		{
+			title: "AsrJamat",
+			dataIndex: "AsrJamat",
+			key: "AsrJamat",
+		},
+		{
 			title: "Maghrib",
 			dataIndex: "Maghrib",
 			key: "Maghrib",
+		},
+		{
+			title: "MaghribJamat",
+			dataIndex: "MaghribJamat",
+			key: "MaghribJamat",
 		},
 		{
 			title: "Ishaa",
@@ -46,15 +67,31 @@ function Timesetting() {
 			key: "Ishaa",
 		},
 		{
-			title: "operation",
-			dataIndex: "operation",
-			render: (text, record) =>
-				type.length >= 1 ? (
-					<Popconfirm title="Sure to Edit?" onConfirm={() => handleEdit(record.adhanDate)}>
-						<a>Edit</a>
-					</Popconfirm>
-				) : null,
+			title: "IshaaJamat",
+			dataIndex: "IshaaJamat",
+			key: "IshaaJamat",
 		},
+		{
+			title: "Jumma",
+			dataIndex: "Jumma",
+			key: "Jumma",
+		},
+		{
+			title: "JummaJamat",
+			dataIndex: "JummaJamat",
+			key: "JummaJamat",
+		},
+		// , *edit function *
+		// {
+		// 	title: "operation",
+		// 	dataIndex: "operation",
+		// 	render: (text, record) =>
+		// 		type.length >= 1 ? (
+		// 			<Popconfirm title="Sure to Edit?" onConfirm={() => handleEdit(record.adhanDate)}>
+		// 				<a>Edit</a>
+		// 			</Popconfirm>
+		// 		) : null,
+		// },
 	];
 
 	const [show, setShow] = useState(false);
@@ -159,11 +196,14 @@ function Timesetting() {
 	function convertresponseToAdhanObject(value) {
 		let adhanObj = {};
 		adhanObj.adhanDate = value.adhanDate;
-		adhanObj.Fajr = getPrayerTimeByPrayer(value.adhanTimes, "Fajr");
-		adhanObj.Dhuhr = getPrayerTimeByPrayer(value.adhanTimes, "Dhuhr");
-		adhanObj.Asr = getPrayerTimeByPrayer(value.adhanTimes, "Asr");
-		adhanObj.Maghrib = getPrayerTimeByPrayer(value.adhanTimes, "Maghrib");
-		adhanObj.Ishaa = getPrayerTimeByPrayer(value.adhanTimes, "Ishaa");
+		
+
+		 getPrayerTimeByPrayer(value.adhanTimes, "Fajr", adhanObj);
+		 getPrayerTimeByPrayer(value.adhanTimes, "Dhuhr", adhanObj);
+		 getPrayerTimeByPrayer(value.adhanTimes, "Asr", adhanObj);
+		 getPrayerTimeByPrayer(value.adhanTimes, "Maghrib", adhanObj);
+		 getPrayerTimeByPrayer(value.adhanTimes, "Ishaa", adhanObj);
+		 getPrayerTimeByPrayer(value.adhanTimes, "Jumma", adhanObj);
 		return adhanObj;
 	}
 	function addPrayer() {
@@ -192,13 +232,14 @@ function Timesetting() {
 			showModal();
 		});
 	};
-	function getPrayerTimeByPrayer(valArray, prayerName) {
+	function getPrayerTimeByPrayer(valArray, prayerName, adhanObj) {
 		console.log("Val Array" + valArray);
 		console.log("prayerName" + prayerName);
 		var returnObj = valArray.filter((obj) => {
 			return obj.prayerName === prayerName;
 		});
-		return returnObj[0].adhanTime;
+		adhanObj[prayerName] = returnObj[0].adhanTime;
+		adhanObj[prayerName + "Jamat"] = returnObj[0].jamatTime;
 	}
 	useEffect(() => {
 		console.log("userInput Updated");
@@ -216,10 +257,11 @@ function Timesetting() {
 		<div>
 			<MainDiv>
 				<ButtonDiv>
-					<Button type="primary" onClick={addPrayer} style={{ margin: "auto 5px" }}>
+					{/* <Button type="primary" onClick={addPrayer} style={{ margin: "auto 5px" }}>
 						Add Prayer
-					</Button>
+					</Button> */}
 					<ImageUpload />
+					<MasjidName/>
 					<Message />
 				</ButtonDiv>
 				<FileButtonDiv>
